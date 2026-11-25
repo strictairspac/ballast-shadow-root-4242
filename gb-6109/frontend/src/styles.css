@@ -115,3 +115,38 @@ td a[aria-current=true] { font-weight: 750; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* 撤销 / 留档标记 */
+.row-badges { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.retention {
+  font-size: .86rem; font-weight: 800; letter-spacing: .08em; width: fit-content;
+  padding: .24rem .6rem; border: 1px solid currentColor; border-radius: var(--radius);
+  background: var(--surface);
+}
+.retention.retained { color: var(--accent); border-color: var(--accent); }
+.retention.voided { color: var(--signal); border-color: var(--signal); text-decoration: line-through; text-decoration-thickness: .12rem; }
+.retention.pending { color: var(--muted); border-color: var(--rule); }
+.state-revoked { color: var(--signal); }
+.state-running { color: var(--accent); }
+.retention-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .8rem;
+  padding: .85rem 1rem; border-radius: var(--radius); background: var(--tint);
+  border-inline-start: .3rem solid var(--rule);
+}
+.retention-banner.retained { border-inline-start-color: var(--accent); }
+.retention-banner .retention { flex: 0 0 auto; }
+.void-panel { border-inline-start: .35rem solid var(--signal); display: grid; gap: .7rem; }
+.void-panel h2 { color: var(--signal); }
+.void-reason { font-weight: 650; }
+.void-note { color: var(--signal); background: color-mix(in srgb, var(--signal) 9%, var(--surface)); padding: .7rem .85rem; border-radius: var(--radius); }
+.muted { color: var(--muted); }
+.digest-cell { font-size: .82rem; color: var(--muted); }
+
+button.danger, .button.danger { background: var(--signal); color: #fff; }
+button.secondary, .button.secondary { background: transparent; color: var(--accent); border-color: var(--accent); }
+.button.quiet-link { background: transparent; color: var(--accent); border-color: var(--rule); }
+.revoke-control { gap: .45rem; }
+.verify-row { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-top: .7rem; }
+.verify-row [role=status] { margin: 0; font-size: .9rem; }
+.verify-row [data-matches="true"] { color: var(--accent); font-weight: 650; }
+.verify-row [data-matches="false"] { color: var(--signal); font-weight: 650; }

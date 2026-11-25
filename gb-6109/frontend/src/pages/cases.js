@@ -1,6 +1,7 @@
 import { api } from "../api/workbench.js";
 import { errorText, field } from "../components/common/fields.js";
 import { empty, pageHeading, section } from "../components/common/panel.js";
+import { revokeButton } from "../components/common/revoke.js";
 import { table } from "../components/common/table.js";
 import { submit } from "../hooks/submit.js";
 import { navigate } from "../router/router.js";
@@ -44,6 +45,13 @@ export async function casesPage(config, user, route) {
   const cases = await api.cases();
   const selected = cases.find(item => item.id === route.id) ?? cases.at(-1);
   const operator = user.role === "operator";
+  const redacted = selected && (!selected.payload || Object.keys(selected.payload).length === 0);
+
+  const caseRevoke = selected && operator && !redacted ? revokeButton("撤销资料", async () => {
+    await api.revokeCase(selected.id);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  }, {testid: "revoke-case"}) : null;
+
   return el("div", {class: "page"},
     pageHeading(config.modules[1], `${config.unit} · ${config.fixture}`),
     section("资料目录", cases.length ? table(["编号", "名称", "说明", "操作"], cases.map(item =>
@@ -52,8 +60,12 @@ export async function casesPage(config, user, route) {
       empty("这里还没有资料。")),
     el("div", {class: "split case-split"},
       section(selected ? selected.title : "等待选择资料", selected ?
-        [el("p", {}, selected.description), operator ? queueForm(config, selected) : empty("当前账号可查看此资料。"),
-          el("details", {}, el("summary", {}, "查看业务数据"), el("pre", {}, JSON.stringify(selected.payload, null, 2)))] :
+        [el("p", {}, selected.description),
+          redacted ? el("p", {class: "void-note", "data-testid": "case-redacted", role: "status"},
+            "该资料已撤销：原始资料已清除，其未签核批次均已作废；已签核批次仍保留并可用原摘要核对。")
+          : [operator ? queueForm(config, selected) : empty("当前账号可查看此资料。"),
+             el("details", {}, el("summary", {}, "查看业务数据"), el("pre", {}, JSON.stringify(selected.payload, null, 2)))],
+          caseRevoke] :
         empty("先登记一条资料，再提交执行。")),
       operator ? section("登记新资料", registration(config, selected)) : null));
 }

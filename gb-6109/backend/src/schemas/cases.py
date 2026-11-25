@@ -27,3 +27,8 @@ class CaseEntry(CaseInput):
     id: int
     code: str
     created_by: str
+
+
+class CaseRevocationEntry(CaseEntry):
+    revoked_runs: list[int] = []
+    retained_runs: list[int] = []

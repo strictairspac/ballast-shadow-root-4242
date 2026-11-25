@@ -23,3 +23,15 @@ def new_run(case_id, data, user):
 def new_review(run_id, data, user):
     with engine.begin() as db:
         return reviews.sign(db, run_id, data, user["username"])
+
+
+def revoke_run(run_id, data, user):
+    reason = getattr(data, "reason", None) if data is not None else None
+    with engine.begin() as db:
+        return runs.revoke(db, run_id, user["username"], reason)
+
+
+def revoke_case(case_id, data, user):
+    reason = getattr(data, "reason", None) if data is not None else None
+    with engine.begin() as db:
+        return cases.revoke(db, case_id, user["username"], reason)
